@@ -1,4 +1,4 @@
-package com.example.demo.entity;
+package com.example.consumer.entity;
 
 public class User {
     private Integer id;

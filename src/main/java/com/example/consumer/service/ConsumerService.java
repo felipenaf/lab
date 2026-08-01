@@ -1,7 +1,7 @@
-package com.example.demo.consumer;
+package com.example.consumer.service;
 
-import com.example.demo.event.UserCreatedEvent;
-import com.example.demo.properties.RabbitmqProperties;
+import com.example.consumer.event.UserCreatedEvent;
+import com.example.consumer.properties.RabbitmqProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.*;
 import jakarta.annotation.PostConstruct;
@@ -11,11 +11,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 @Component
-public class Consumer {
+public class ConsumerService {
 
     private final RabbitmqProperties env;
 
-    public Consumer(RabbitmqProperties env) {
+    public ConsumerService(RabbitmqProperties env) {
         this.env = env;
     }
 

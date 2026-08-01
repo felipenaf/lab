@@ -1,4 +1,4 @@
-package com.example.demo.event;
+package com.example.consumer.event;
 
 public record UserCreatedEvent(String name, String email) {
 }
