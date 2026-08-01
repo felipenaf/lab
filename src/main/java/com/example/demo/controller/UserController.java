@@ -43,7 +43,6 @@ public class UserController {
             UserCreatedEvent event = new UserCreatedEvent(user.getName(), user.getEmail());
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(event);
-            System.out.println(json);
 
             AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
                 .contentType("application/json")
@@ -57,7 +56,10 @@ public class UserController {
                 json.getBytes(StandardCharsets.UTF_8)
             );
 
+            System.out.println("------ Producer --------");
+            System.out.println(json);
             System.out.println("Message published");
+            System.out.println("------------------------");
         } catch (IOException | TimeoutException e) {
             throw new RuntimeException(e);
         }
