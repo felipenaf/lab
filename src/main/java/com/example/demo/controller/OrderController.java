@@ -1,30 +1,35 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.Order;
+import com.example.demo.entity.User;
+import com.example.demo.event.OrderCreatedEvent;
 import com.example.demo.event.UserCreatedEvent;
 import com.example.demo.properties.RabbitmqProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.*;
-import com.example.demo.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/order")
+public class OrderController {
 
     private final RabbitmqProperties env;
 
-    public UserController(RabbitmqProperties env) {
+    public OrderController(RabbitmqProperties env) {
         this.env = env;
     }
 
     @PostMapping
-    public ResponseEntity<User> save(@RequestBody User user){
+    public ResponseEntity<Order> save(@RequestBody Order order){
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(env.getHost());
         factory.setPort(env.getPort());
@@ -35,17 +40,23 @@ public class UserController {
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 
-            channel.queueDeclare(
-                "user.queue",
-                true,   // durable
-                false,  // exclusive
-                false,  // autoDelete
-                null
+            channel.exchangeDeclare(
+                "order.exchange",
+                BuiltinExchangeType.DIRECT,
+                true // durable
             );
 
-            UserCreatedEvent event = new UserCreatedEvent(user.getName(), user.getEmail());
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(event);
+//            channel.queueDeclare(
+//                "user.queue",
+//                true,   // durable
+//                false,  // exclusive
+//                false,  // autoDelete
+//                null
+//            );
+
+            String json = new ObjectMapper().writeValueAsString(
+                new OrderCreatedEvent(order.getCustomerId(), order.getTotal())
+            );
 
             AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
                 .contentType("application/json")
@@ -53,13 +64,13 @@ public class UserController {
                 .build();
 
             channel.basicPublish(
-                "",
-                "user.queue",
+                "order.exchange",      // exchange
+                "order.created",       // routing key
                 props,
                 json.getBytes(StandardCharsets.UTF_8)
             );
 
-            System.out.println("------ Producer --------");
+            System.out.println("------ Order Producer --------");
             System.out.println(json);
             System.out.println("Message published");
             System.out.println("------------------------");
@@ -67,6 +78,6 @@ public class UserController {
             throw new RuntimeException(e);
         }
 
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(order, HttpStatus.OK);
     }
 }
