@@ -11,11 +11,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 @Component
-public class ConsumerService {
+public class NotificationConsumerService {
 
     private final RabbitmqProperties env;
 
-    public ConsumerService(RabbitmqProperties env) {
+    public NotificationConsumerService(RabbitmqProperties env) {
         this.env = env;
     }
 
@@ -30,13 +30,32 @@ public class ConsumerService {
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
-        channel.queueDeclare("user.queue", true, false, false, null);
+        channel.exchangeDeclare(
+            "order.exchange",
+            BuiltinExchangeType.DIRECT,
+            true // durable
+        );
+
+        channel.queueDeclare(
+            "notification.queue",
+            true,
+            false,
+            false,
+            null
+        );
+
+        channel.queueBind(
+            "notification.queue",
+            "order.exchange",
+            "order.created"
+        );
 
         DeliverCallback callback = (consumerTag, delivery) -> {
             String json = new String(delivery.getBody(), StandardCharsets.UTF_8);
 
-            System.out.println("------ Consumer --------");
+            System.out.println("------ " + this.getClass().getSimpleName() + " --------");
             System.out.println("consumerTag: " + consumerTag);
+            System.out.println("Exchange: " + delivery.getEnvelope().getExchange());
             System.out.println("Routing Key: " + delivery.getEnvelope().getRoutingKey());
 
             if (Objects.equals(delivery.getEnvelope().getRoutingKey(), "user.queue")) {
@@ -59,8 +78,8 @@ public class ConsumerService {
         };
 
         channel.basicConsume(
-            "user.queue",
-            false,   // autoAck
+            "notification.queue",
+            false, // autoAck
             callback,
             consumerTag -> {}
         );
