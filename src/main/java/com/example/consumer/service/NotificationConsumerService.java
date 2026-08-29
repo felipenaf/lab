@@ -12,7 +12,7 @@ import java.util.Objects;
 
 @Component
 public class NotificationConsumerService {
-
+    private static final String QUEUE = "notification.queue";
     private final RabbitmqProperties env;
 
     public NotificationConsumerService(RabbitmqProperties env) {
@@ -27,63 +27,45 @@ public class NotificationConsumerService {
         factory.setUsername(env.getUsername());
         factory.setPassword(env.getPassword());
 
-        Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
+        Channel channel = factory.newConnection().createChannel();
+        // Guarantee the creation of exchange and queue if it doesn't exist
+        //channel.exchangeDeclare("order.exchange", BuiltinExchangeType.DIRECT, true);
+        channel.queueDeclare(QUEUE, true, false, false, null);
 
-        channel.exchangeDeclare(
-            "order.exchange",
-            BuiltinExchangeType.DIRECT,
-            true // durable
+        // Guarantee the association of the queue with the exchange
+        channel.queueBind(QUEUE, "order.exchange", "order.created");
+        channel.basicConsume(QUEUE, false, this::consume, consumerTag -> {});
+
+        System.out.println(this.getClass().getSimpleName() + " - Waiting for messages...");
+    }
+
+    private void consume(String consumerTag, Delivery delivery) {
+        String json = new String(delivery.getBody(), StandardCharsets.UTF_8);
+
+        System.out.println("------ " + this.getClass().getSimpleName() + " --------");
+        System.out.println(
+            "Deliver Tag: " + delivery.getEnvelope().getDeliveryTag()
+                + " | Consumer Tag: " + consumerTag
+                + " | Exchange: " + delivery.getEnvelope().getExchange()
+                + " | Routing Key: " + delivery.getEnvelope().getRoutingKey()
+                + " | Body: " + json
         );
+        System.out.println("------------------------");
 
-        channel.queueDeclare(
-            "notification.queue",
-            true,
-            false,
-            false,
-            null
-        );
+//        if (Objects.equals(delivery.getEnvelope().getRoutingKey(), "user.queue")) {
+//            var user = (new ObjectMapper()).readValue(json, UserCreatedEvent.class);
+//            System.out.println("Message Received: " + user);
+//        }
 
-        channel.queueBind(
-            "notification.queue",
-            "order.exchange",
-            "order.created"
-        );
-
-        DeliverCallback callback = (consumerTag, delivery) -> {
-            String json = new String(delivery.getBody(), StandardCharsets.UTF_8);
-
-            System.out.println("------ " + this.getClass().getSimpleName() + " --------");
-            System.out.println("consumerTag: " + consumerTag);
-            System.out.println("Exchange: " + delivery.getEnvelope().getExchange());
-            System.out.println("Routing Key: " + delivery.getEnvelope().getRoutingKey());
-
-            if (Objects.equals(delivery.getEnvelope().getRoutingKey(), "user.queue")) {
-                var user = (new ObjectMapper()).readValue(json, UserCreatedEvent.class);
-                System.out.println("Message Received: " + user);
-            }
-
-            System.out.println("------------------------");
-
-//            channel.basicNack(
-//                delivery.getEnvelope().getDeliveryTag(),
-//                false,
-//                true // Requeue the message
-//            );
-
-//            channel.basicAck(
-//                delivery.getEnvelope().getDeliveryTag(),
-//                false
-//            );
-        };
-
-        channel.basicConsume(
-            "notification.queue",
-            false, // autoAck
-            callback,
-            consumerTag -> {}
-        );
-
-        System.out.println("Waiting for messages...");
+//        channel.basicNack(
+//            delivery.getEnvelope().getDeliveryTag(),
+//            false,
+//            true // Requeue the message
+//        );
+//
+//        channel.basicAck(
+//            delivery.getEnvelope().getDeliveryTag(),
+//            false
+//        );
     }
 }
