@@ -46,14 +46,6 @@ public class OrderController {
                 true // durable
             );
 
-//            channel.queueDeclare(
-//                "user.queue",
-//                true,   // durable
-//                false,  // exclusive
-//                false,  // autoDelete
-//                null
-//            );
-
             String json = new ObjectMapper().writeValueAsString(
                 new OrderCreatedEvent(order.getCustomerId(), order.getTotal())
             );
