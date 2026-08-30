@@ -18,6 +18,15 @@ To see the status
 ```
 http://localhost:15672/#/queues
 ```
+## Images
+PATCH request 
+![Screenshot from 2026-08-30 17-54-51.png](screenshot/Screenshot%20from%202026-08-30%2017-54-51.png)
+
+POST request
+![Screenshot from 2026-08-30 17-58-14.png](screenshot/Screenshot%20from%202026-08-30%2017-58-14.png)
+
+> I configured a TOPIC exchange and put to Notification accept every order, 
+> like "order.*" and Inventory accepts just the whole case "order.created"  
 
 ## Miro Diagram
 ```
