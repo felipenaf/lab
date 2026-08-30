@@ -19,6 +19,11 @@ To see the status
 http://localhost:15672/#/queues
 ```
 
+## Miro Diagram
+```
+https://miro.com/app/board/uXjVHVMxylA=/?focusWidget=3458764682159659437
+```
+
 ## Brainstorming
 I am learning how to implement with chatgpt
 

@@ -1,7 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.User;
+import com.example.demo.event.UserCreatedEvent;
 import com.example.demo.event.UserCreatedEvent;
 import com.example.demo.properties.RabbitmqProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.*;
 import com.example.demo.entity.User;
@@ -16,7 +19,7 @@ import java.util.concurrent.TimeoutException;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
+    private static final int PERSISTENT = 2;
     private final RabbitmqProperties env;
 
     public UserController(RabbitmqProperties env) {
@@ -32,41 +35,36 @@ public class UserController {
         factory.setPassword(env.getPassword());
 
         try {
-            Connection connection = factory.newConnection();
-            Channel channel = connection.createChannel();
-
-            channel.queueDeclare(
-                "user.queue",
-                true,   // durable
-                false,  // exclusive
-                false,  // autoDelete
-                null
-            );
-
-            UserCreatedEvent event = new UserCreatedEvent(user.getName(), user.getEmail());
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(event);
+            Channel channel = factory.newConnection().createChannel();
+            channel.exchangeDeclare("user.exchange", BuiltinExchangeType.TOPIC, true);
 
             AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
                 .contentType("application/json")
-                .deliveryMode(2) // 2 = persistent
+                .deliveryMode(PERSISTENT)
                 .build();
 
+            String json = getJson(user);
+
             channel.basicPublish(
-                "",
-                "user.queue",
+                "user.exchange",
+                "user.created",
                 props,
                 json.getBytes(StandardCharsets.UTF_8)
             );
 
-            System.out.println("------ Producer --------");
+            System.out.println("-- User Producer - Message published --");
             System.out.println(json);
-            System.out.println("Message published");
-            System.out.println("------------------------");
+            System.out.println("----------------------------------------");
         } catch (IOException | TimeoutException e) {
             throw new RuntimeException(e);
         }
 
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    private static String getJson(User user) throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(
+            new UserCreatedEvent(user.getName(), user.getEmail())
+        );
     }
 }
