@@ -33,7 +33,7 @@ public class NotificationConsumerService {
         channel.queueDeclare(QUEUE, true, false, false, null);
 
         // Guarantee the association of the queue with the exchange
-        channel.queueBind(QUEUE, "order.exchange", "order.created");
+        channel.queueBind(QUEUE, "order.exchange", "order.*");
         channel.basicConsume(QUEUE, false, this::consume, consumerTag -> {});
 
         System.out.println(this.getClass().getSimpleName() + " - Waiting for messages...");
@@ -42,7 +42,7 @@ public class NotificationConsumerService {
     private void consume(String consumerTag, Delivery delivery) {
         String json = new String(delivery.getBody(), StandardCharsets.UTF_8);
 
-        System.out.println("------ " + this.getClass().getSimpleName() + " --------");
+        System.out.println("-- " + this.getClass().getSimpleName() + " --");
         System.out.println(
             "Deliver Tag: " + delivery.getEnvelope().getDeliveryTag()
                 + " | Consumer Tag: " + consumerTag
@@ -50,7 +50,7 @@ public class NotificationConsumerService {
                 + " | Routing Key: " + delivery.getEnvelope().getRoutingKey()
                 + " | Body: " + json
         );
-        System.out.println("------------------------");
+        System.out.println("--------------------------");
 
 //        if (Objects.equals(delivery.getEnvelope().getRoutingKey(), "user.queue")) {
 //            var user = (new ObjectMapper()).readValue(json, UserCreatedEvent.class);

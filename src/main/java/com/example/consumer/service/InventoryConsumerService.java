@@ -42,7 +42,7 @@ public class InventoryConsumerService {
     private void consume(String consumerTag, Delivery delivery) {
         String json = new String(delivery.getBody(), StandardCharsets.UTF_8);
 
-        System.out.println("------ " + this.getClass().getSimpleName() + " --------");
+        System.out.println("-- " + this.getClass().getSimpleName() + " --");
         System.out.println(
             "Deliver Tag: " + delivery.getEnvelope().getDeliveryTag()
                 + " | Consumer Tag: " + consumerTag
@@ -50,7 +50,7 @@ public class InventoryConsumerService {
                 + " | Routing Key: " + delivery.getEnvelope().getRoutingKey()
                 + " | Body: " + json
         );
-        System.out.println("------------------------");
+        System.out.println("--------------------------");
 
 //        if (Objects.equals(delivery.getEnvelope().getRoutingKey(), "user.queue")) {
 //            var user = (new ObjectMapper()).readValue(json, UserCreatedEvent.class);
