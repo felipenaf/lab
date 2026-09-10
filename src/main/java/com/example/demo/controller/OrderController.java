@@ -5,6 +5,7 @@ import com.example.demo.entity.User;
 import com.example.demo.event.OrderCreatedEvent;
 import com.example.demo.event.UserCreatedEvent;
 import com.example.demo.properties.RabbitmqProperties;
+import com.example.demo.service.OrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.*;
@@ -23,10 +24,13 @@ import java.util.concurrent.TimeoutException;
 public class OrderController {
     private static final int PERSISTENT = 2;
     private static final String EXCHANGE = "order.exchange";
+    private static final Logger log = LoggerFactory.getLogger(OrderController.class);
     private final AMQP.BasicProperties props;
     private final ConnectionFactory connectionFactory;
+    private final OrderService orderService;
 
-    public OrderController(RabbitmqProperties env) {
+    public OrderController(OrderService orderService, RabbitmqProperties env) {
+        this.orderService = orderService;
         this.props = new AMQP.BasicProperties.Builder()
             .contentType("application/json")
             .deliveryMode(PERSISTENT)
@@ -42,26 +46,12 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<Order> save(@RequestBody Order order){
         try {
-            Channel channel = connectionFactory.newConnection().createChannel();
-            channel.exchangeDeclare(EXCHANGE, BuiltinExchangeType.TOPIC, true);
-
-            String json = getJson(order);
-
-            channel.basicPublish(
-                EXCHANGE,
-                "order.created",
-                props,
-                json.getBytes(StandardCharsets.UTF_8)
-            );
-
-            System.out.println("-- Order Producer - Message published --");
-            System.out.println(json);
-            System.out.println("----------------------------------------");
+            orderService.save(order);
+            return new ResponseEntity<>(order, HttpStatus.OK);
         } catch (IOException | TimeoutException e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage());
+            return new ResponseEntity<>(order, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
     @PatchMapping

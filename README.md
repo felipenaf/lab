@@ -42,5 +42,5 @@ https://chatgpt.com/c/6a661b0d-eae4-83e9-8c7a-c97ec1b3c0cb
 
 ## Report
 
--[ ] I need to understand how to get again an unacked message
--[ ] Create another queues to understand the behaviors
+-[x] I need to understand how to get again an unacked message
+-[x] Create another queues to understand the behaviors
