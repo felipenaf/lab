@@ -58,6 +58,26 @@ public class OrderService {
         System.out.println("----------------------------------------");
     }
 
+    public void update(@RequestBody Order order)
+        throws IOException, TimeoutException
+    {
+        Channel channel = connectionFactory.newConnection().createChannel();
+        channel.exchangeDeclare(EXCHANGE, BuiltinExchangeType.TOPIC, true);
+
+        String json = getJson(order);
+
+        channel.basicPublish(
+            EXCHANGE,
+            "order.updated",
+            props,
+            json.getBytes(StandardCharsets.UTF_8)
+        );
+
+        System.out.println("-- Order Producer - Message published --");
+        System.out.println(json);
+        System.out.println("----------------------------------------");
+    }
+
     private static String getJson(Order order) throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(
             new OrderCreatedEvent(order.getCustomerId(), order.getTotal())
