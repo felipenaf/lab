@@ -1,6 +1,7 @@
 package com.example.consumer.service;
 
-import com.example.consumer.configuration.RabbitmqProperties;
+import com.example.consumer.messaging.Message;
+import com.example.consumer.messaging.MessageConsumer;
 import com.rabbitmq.client.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
@@ -10,43 +11,25 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class NotificationConsumerService {
     private static final String QUEUE = "notification.queue";
-    private final RabbitmqProperties env;
+    private final MessageConsumer consumer;
 
-    public NotificationConsumerService(RabbitmqProperties env) {
-        this.env = env;
+    public NotificationConsumerService(MessageConsumer consumer) {
+        this.consumer = consumer;
     }
 
     @PostConstruct
     public void start() throws Exception {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(env.host());
-        factory.setPort(env.port());
-        factory.setUsername(env.username());
-        factory.setPassword(env.password());
-
-        Channel channel = factory.newConnection().createChannel();
-        // Guarantee the creation of exchange and queue if it doesn't exist
-        //channel.exchangeDeclare("order.exchange", BuiltinExchangeType.DIRECT, true);
-        channel.queueDeclare(QUEUE, true, false, false, null);
-
-        // Guarantee the association of the queue with the exchange
-        channel.queueBind(QUEUE, "order.exchange", "order.*");
-        channel.basicConsume(QUEUE, false, this::consume, consumerTag -> {});
-
+        consumer.consume(QUEUE, "order.exchange", "order.*", this::consume);
         System.out.println(this.getClass().getSimpleName() + " - Waiting for messages...");
     }
 
-    private void consume(String consumerTag, Delivery delivery) {
-        String json = new String(delivery.getBody(), StandardCharsets.UTF_8);
+    private void consume(Message message) {
+        String json = new String(message.body(), StandardCharsets.UTF_8);
 
         System.out.println("-- " + this.getClass().getSimpleName() + " --");
-        System.out.println(
-            "Deliver Tag: " + delivery.getEnvelope().getDeliveryTag()
-                + " | Consumer Tag: " + consumerTag
-                + " | Exchange: " + delivery.getEnvelope().getExchange()
-                + " | Routing Key: " + delivery.getEnvelope().getRoutingKey()
-                + " | Body: " + json
-        );
+        System.out.println("Exchange: " + message.exchange());
+        System.out.println("Routing Key: " + message.routingKey());
+        System.out.println("Body: " + json);
         System.out.println("--------------------------");
     }
 }
