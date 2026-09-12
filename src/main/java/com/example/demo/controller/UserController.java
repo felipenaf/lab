@@ -2,12 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.User;
 import com.example.demo.event.UserCreatedEvent;
-import com.example.demo.event.UserCreatedEvent;
-import com.example.demo.properties.RabbitmqProperties;
+import com.example.demo.configuration.RabbitmqProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.*;
-import com.example.demo.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +27,10 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> save(@RequestBody User user){
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(env.getHost());
-        factory.setPort(env.getPort());
-        factory.setUsername(env.getUsername());
-        factory.setPassword(env.getPassword());
+        factory.setHost(env.host());
+        factory.setPort(env.port());
+        factory.setUsername(env.username());
+        factory.setPassword(env.password());
 
         try {
             Channel channel = factory.newConnection().createChannel();
