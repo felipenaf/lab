@@ -1,14 +1,11 @@
 package com.example.consumer.service;
 
-import com.example.consumer.event.UserCreatedEvent;
-import com.example.consumer.properties.RabbitmqProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.consumer.configuration.RabbitmqProperties;
 import com.rabbitmq.client.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 @Component
 public class NotificationConsumerService {
@@ -22,10 +19,10 @@ public class NotificationConsumerService {
     @PostConstruct
     public void start() throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(env.getHost());
-        factory.setPort(env.getPort());
-        factory.setUsername(env.getUsername());
-        factory.setPassword(env.getPassword());
+        factory.setHost(env.host());
+        factory.setPort(env.port());
+        factory.setUsername(env.username());
+        factory.setPassword(env.password());
 
         Channel channel = factory.newConnection().createChannel();
         // Guarantee the creation of exchange and queue if it doesn't exist
@@ -51,21 +48,5 @@ public class NotificationConsumerService {
                 + " | Body: " + json
         );
         System.out.println("--------------------------");
-
-//        if (Objects.equals(delivery.getEnvelope().getRoutingKey(), "user.queue")) {
-//            var user = (new ObjectMapper()).readValue(json, UserCreatedEvent.class);
-//            System.out.println("Message Received: " + user);
-//        }
-
-//        channel.basicNack(
-//            delivery.getEnvelope().getDeliveryTag(),
-//            false,
-//            true // Requeue the message
-//        );
-//
-//        channel.basicAck(
-//            delivery.getEnvelope().getDeliveryTag(),
-//            false
-//        );
     }
 }
