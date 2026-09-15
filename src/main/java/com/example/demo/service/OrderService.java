@@ -1,48 +1,71 @@
 package com.example.demo.service;
 
-import com.example.demo.messaging.MessagePublisher;
+import com.example.demo.entity.OutboxEvent;
 import com.example.demo.entity.Order;
 import com.example.demo.event.OrderCreatedEvent;
 import com.example.demo.repository.OrderRepository;
+import com.example.demo.repository.OutboxEventRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 @Service
 public class OrderService {
     private static final String EXCHANGE = "order.exchange";
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
-    private final MessagePublisher messagePublisher;
     private final OrderRepository orderRepository;
+    private final OutboxEventRepository outboxEventRepository;
 
-    public OrderService(MessagePublisher messagePublisher, OrderRepository orderRepository) {
-        this.messagePublisher = messagePublisher;
+    public OrderService(
+        OrderRepository orderRepository,
+        OutboxEventRepository outboxEventRepository
+    ) {
         this.orderRepository = orderRepository;
+        this.outboxEventRepository = outboxEventRepository;
     }
 
-    public void save(@RequestBody Order order) throws IOException {
-        String json = getJson(order);
-//        TODO: I need create a transaction to assure the message will sent just if the database save correctly
-        messagePublisher.publish(EXCHANGE, "order.created", json.getBytes(StandardCharsets.UTF_8));
-        log.info("Message: " + json);
+    @Transactional
+    public void save(Order order) throws IOException {
         orderRepository.save(order);
+        outboxEventRepository.save(
+            new OutboxEvent(
+                EXCHANGE,
+                "order.created",
+                getJson(order),
+                OutboxEvent.Status.PENDING)
+        );
     }
 
-    public void update(@RequestBody Order order) throws IOException {
-        String json = getJson(order);
-        messagePublisher.publish(EXCHANGE, "order.updated", json.getBytes(StandardCharsets.UTF_8));
-        log.info("Message: " + json);
+    @Transactional
+    public void update(long id, Order order) throws IOException {
+        Order existingOrder = orderRepository.findById(id)
+            .orElseThrow();
+
+        existingOrder.setCustomerId(order.getCustomerId());
+        existingOrder.setTotal(order.getTotal());
+
+        outboxEventRepository.save(
+            new OutboxEvent(
+                EXCHANGE,
+                "order.updated",
+                getJson(existingOrder),
+                OutboxEvent.Status.PENDING
+            )
+        );
     }
 
     private static String getJson(Order order) throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(
+        String json = new ObjectMapper().writeValueAsString(
             new OrderCreatedEvent(order.getCustomerId(), order.getTotal())
         );
+
+        log.info("Message: {}", json);
+
+        return json;
     }
 }

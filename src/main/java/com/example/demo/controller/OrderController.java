@@ -31,10 +31,10 @@ public class OrderController {
         }
     }
 
-    @PatchMapping
-    public ResponseEntity<Order> update(@RequestBody Order order){
+    @PatchMapping("/{id}")
+    public ResponseEntity<Order> update(@PathVariable long id, @RequestBody Order order){
         try {
-            orderService.update(order);
+            orderService.update(id, order);
             return new ResponseEntity<>(order, HttpStatus.OK);
         } catch (IOException e) {
             log.error(e.getMessage());
