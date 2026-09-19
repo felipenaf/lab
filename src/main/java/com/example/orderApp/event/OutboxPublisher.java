@@ -1,8 +1,8 @@
-package com.example.demo.event;
+package com.example.orderApp.event;
 
-import com.example.demo.entity.OutboxEvent;
-import com.example.demo.messaging.MessagePublisher;
-import com.example.demo.repository.OutboxEventRepository;
+import com.example.orderApp.entity.OutboxEvent;
+import com.example.orderApp.messaging.MessagePublisher;
+import com.example.orderApp.repository.OutboxEventRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;

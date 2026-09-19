@@ -1,4 +1,4 @@
-package com.example.demo.messaging;
+package com.example.orderApp.messaging;
 
 import java.io.IOException;
 

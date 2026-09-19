@@ -1,4 +1,4 @@
-package com.example.demo.entity;
+package com.example.orderApp.entity;
 
 public class User {
     private Integer id;

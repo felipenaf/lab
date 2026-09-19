@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.example.orderApp.repository;
 
-import com.example.demo.entity.OutboxEvent;
+import com.example.orderApp.entity.OutboxEvent;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

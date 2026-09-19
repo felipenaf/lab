@@ -1,10 +1,10 @@
-package com.example.demo.service;
+package com.example.orderApp.service;
 
-import com.example.demo.entity.OutboxEvent;
-import com.example.demo.entity.Order;
-import com.example.demo.event.OrderCreatedEvent;
-import com.example.demo.repository.OrderRepository;
-import com.example.demo.repository.OutboxEventRepository;
+import com.example.orderApp.entity.OutboxEvent;
+import com.example.orderApp.entity.Order;
+import com.example.orderApp.event.OrderCreatedEvent;
+import com.example.orderApp.repository.OrderRepository;
+import com.example.orderApp.repository.OutboxEventRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;

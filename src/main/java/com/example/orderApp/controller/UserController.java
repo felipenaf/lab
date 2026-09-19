@@ -1,8 +1,8 @@
-package com.example.demo.controller;
+package com.example.orderApp.controller;
 
-import com.example.demo.entity.User;
-import com.example.demo.event.UserCreatedEvent;
-import com.example.demo.configuration.RabbitmqProperties;
+import com.example.orderApp.entity.User;
+import com.example.orderApp.event.UserCreatedEvent;
+import com.example.orderApp.configuration.RabbitmqProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.*;

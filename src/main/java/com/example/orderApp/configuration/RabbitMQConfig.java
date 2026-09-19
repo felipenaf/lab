@@ -1,4 +1,4 @@
-package com.example.demo.configuration;
+package com.example.orderApp.configuration;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

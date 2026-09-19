@@ -1,4 +1,4 @@
-package com.example.demo.event;
+package com.example.orderApp.event;
 
 public record OrderCreatedEvent(String customerId, String total) {
 }

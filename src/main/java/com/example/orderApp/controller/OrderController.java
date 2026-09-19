@@ -1,7 +1,7 @@
-package com.example.demo.controller;
+package com.example.orderApp.controller;
 
-import com.example.demo.entity.Order;
-import com.example.demo.service.OrderService;
+import com.example.orderApp.entity.Order;
+import com.example.orderApp.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

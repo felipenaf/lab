@@ -1,3 +1,3 @@
-package com.example.demo.response;
+package com.example.orderApp.response;
 
 public record HealthCheckResponse(String status) {}

@@ -1,4 +1,4 @@
-package com.example.demo.messaging;
+package com.example.orderApp.messaging;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.BuiltinExchangeType;

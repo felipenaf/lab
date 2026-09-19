@@ -1,4 +1,4 @@
-package com.example.demo.configuration;
+package com.example.orderApp.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
