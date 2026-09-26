@@ -35,4 +35,36 @@ class OrderControllerTest {
                 .content(payload)
         ).andExpect(status().isBadRequest());
     }
+
+    @Test
+    void shouldReturn200WhenTotalHasTwoDecimalPlaces() throws Exception {
+        String payload = """
+            {
+                "customerId": "1",
+                "total": 100.00
+            }
+        """;
+
+        mockMvc.perform(
+            post("/order")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(payload)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturn200WhenTotalHasNoDecimalPlaces() throws Exception {
+        String payload = """
+            {
+                "customerId": "1",
+                "total": 100
+            }
+        """;
+
+        mockMvc.perform(
+            post("/order")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(payload)
+        ).andExpect(status().isOk());
+    }
 }
