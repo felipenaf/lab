@@ -1,4 +1,6 @@
 package com.example.orderApp.event;
 
-public record OrderCreatedEvent(String customerId, String total) {
+import java.math.BigDecimal;
+
+public record OrderCreatedEvent(String customerId, BigDecimal total) {
 }

@@ -2,6 +2,8 @@ package com.example.orderApp.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -9,7 +11,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String customerId;
-    private String total;
+    private BigDecimal total;
 
     public Integer getId() {
         return id;
@@ -27,11 +29,11 @@ public class Order {
         this.customerId = customerId;
     }
 
-    public String getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
 
-    public void setTotal(String total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 }

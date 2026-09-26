@@ -1,10 +1,13 @@
 package com.example.orderApp.controller;
 
 import com.example.orderApp.entity.Order;
+import com.example.orderApp.request.OrderRequest;
+import com.example.orderApp.response.SuccessResponse;
+import com.example.orderApp.response.dto.OrderResponse;
 import com.example.orderApp.service.OrderService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,24 +24,24 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> save(@RequestBody Order order){
+    public ResponseEntity<?> save(@Valid @RequestBody OrderRequest request){
         try {
-            orderService.save(order);
-            return new ResponseEntity<>(order, HttpStatus.OK);
+            orderService.save(request);
+            return ResponseEntity.ok(new SuccessResponse("OK"));
         } catch (IOException e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>(order, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Order> update(@PathVariable long id, @RequestBody Order order){
+    public ResponseEntity<OrderResponse> update(@PathVariable long id, @RequestBody OrderRequest request){
         try {
-            orderService.update(id, order);
-            return new ResponseEntity<>(order, HttpStatus.OK);
+            var response = orderService.update(id, request);
+            return ResponseEntity.ok(response);
         } catch (IOException e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>(order, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }
