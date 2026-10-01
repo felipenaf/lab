@@ -1,4 +1,4 @@
-package com.example.notificationApp;
+package com.example.inventoryApp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-public class NotificationApplication {
+public class InventoryApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(NotificationApplication.class, args);
+		SpringApplication.run(InventoryApplication.class, args);
 	}
 
 }

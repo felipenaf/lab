@@ -1,7 +1,7 @@
-package com.example.notificationApp.service;
+package com.example.inventoryApp.service;
 
-import com.example.notificationApp.messaging.Message;
-import com.example.notificationApp.messaging.MessageConsumer;
+import com.example.inventoryApp.messaging.Message;
+import com.example.inventoryApp.messaging.MessageConsumer;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package com.example.notificationApp.configuration;
+package com.example.inventoryApp.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

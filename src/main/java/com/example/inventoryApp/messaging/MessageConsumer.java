@@ -1,4 +1,4 @@
-package com.example.notificationApp.messaging;
+package com.example.inventoryApp.messaging;
 
 import java.io.IOException;
 import java.util.function.Consumer;

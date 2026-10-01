@@ -1,4 +1,4 @@
-package com.example.notificationApp.configuration;
+package com.example.inventoryApp.configuration;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
