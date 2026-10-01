@@ -32,7 +32,9 @@ public class OutboxPublisher {
             PageRequest.of(0, 1000)
         );
 
-        log.info("Pending events {}", events.size());
+        if (!events.isEmpty()) {
+            log.info("Pending events {}", events.size());
+        }
 
         for (OutboxEvent event : events) {
             try {
