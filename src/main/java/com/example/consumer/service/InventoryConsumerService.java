@@ -4,12 +4,15 @@ import com.example.consumer.messaging.Message;
 import com.example.consumer.messaging.MessageConsumer;
 import com.rabbitmq.client.*;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 
 @Component
 public class InventoryConsumerService {
+    private static final Logger log = LoggerFactory.getLogger(InventoryConsumerService.class);
     private static final String QUEUE = "inventory.queue";
     private final MessageConsumer consumer;
 
@@ -20,16 +23,14 @@ public class InventoryConsumerService {
     @PostConstruct
     public void start() throws Exception {
         consumer.consume(QUEUE, "order.exchange", "order.created", this::consume);
-        System.out.println(this.getClass().getSimpleName() + " - Waiting for messages...");
+        log.info("Waiting for messages...");
     }
 
     private void consume(Message message) {
         String json = new String(message.body(), StandardCharsets.UTF_8);
 
-        System.out.println("-- " + this.getClass().getSimpleName() + " --");
-        System.out.println("Exchange: " + message.exchange());
-        System.out.println("Routing Key: " + message.routingKey());
-        System.out.println("Body: " + json);
-        System.out.println("--------------------------");
+        log.info("Exchange: {}", message.exchange());
+        log.info("Routing Key: {}", message.routingKey());
+        log.info(json);
     }
 }

@@ -35,12 +35,6 @@ public class RabbitMQMessageConsumer implements MessageConsumer {
                     delivery.getBody()
                 );
 
-                System.out.println("-- " + this.getClass().getSimpleName() + " --");
-                System.out.println(
-                    "Deliver Tag: " + delivery.getEnvelope().getDeliveryTag() + " | Consumer Tag: " + consumerTag
-                );
-                System.out.println("--------------------------");
-
                 try {
                     handler.accept(message);
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
@@ -50,7 +44,5 @@ public class RabbitMQMessageConsumer implements MessageConsumer {
             },
             consumerTag -> {}
         );
-
-        System.out.println(this.getClass().getSimpleName() + " - Waiting for messages...");
     }
 }
