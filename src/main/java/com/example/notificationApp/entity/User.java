@@ -1,4 +1,4 @@
-package com.example.consumer.entity;
+package com.example.notificationApp.entity;
 
 public class User {
     private Integer id;

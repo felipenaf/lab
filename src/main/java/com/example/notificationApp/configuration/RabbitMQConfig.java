@@ -1,4 +1,4 @@
-package com.example.consumer.configuration;
+package com.example.notificationApp.configuration;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

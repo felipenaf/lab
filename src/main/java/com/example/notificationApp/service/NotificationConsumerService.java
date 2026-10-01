@@ -1,8 +1,7 @@
-package com.example.consumer.service;
+package com.example.notificationApp.service;
 
-import com.example.consumer.messaging.Message;
-import com.example.consumer.messaging.MessageConsumer;
-import com.rabbitmq.client.*;
+import com.example.notificationApp.messaging.Message;
+import com.example.notificationApp.messaging.MessageConsumer;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,18 +10,18 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 
 @Component
-public class InventoryConsumerService {
-    private static final Logger log = LoggerFactory.getLogger(InventoryConsumerService.class);
-    private static final String QUEUE = "inventory.queue";
+public class NotificationConsumerService {
+    private static final Logger log = LoggerFactory.getLogger(NotificationConsumerService.class);
+    private static final String QUEUE = "notification.queue";
     private final MessageConsumer consumer;
 
-    public InventoryConsumerService(MessageConsumer consumer) {
+    public NotificationConsumerService(MessageConsumer consumer) {
         this.consumer = consumer;
     }
 
     @PostConstruct
     public void start() throws Exception {
-        consumer.consume(QUEUE, "order.exchange", "order.created", this::consume);
+        consumer.consume(QUEUE, "order.exchange", "order.*", this::consume);
         log.info("Waiting for messages...");
     }
 

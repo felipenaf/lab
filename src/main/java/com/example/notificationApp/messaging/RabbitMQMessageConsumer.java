@@ -1,4 +1,4 @@
-package com.example.consumer.messaging;
+package com.example.notificationApp.messaging;
 
 import com.rabbitmq.client.Channel;
 import org.springframework.stereotype.Component;

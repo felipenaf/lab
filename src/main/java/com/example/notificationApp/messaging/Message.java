@@ -1,4 +1,4 @@
-package com.example.consumer.messaging;
+package com.example.notificationApp.messaging;
 
 public record Message(
     String exchange,
