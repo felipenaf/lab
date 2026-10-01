@@ -6,6 +6,7 @@ import com.rabbitmq.client.Channel;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class RabbitMQMessagePublisher implements MessagePublisher {
@@ -17,13 +18,13 @@ public class RabbitMQMessagePublisher implements MessagePublisher {
     }
 
     @Override
-    public void publish(String exchange, String routingKey, byte[] message) throws IOException {
+    public void publish(String exchange, String routingKey, String message) throws IOException {
         AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
             .contentType("application/json")
             .deliveryMode(PERSISTENT)
             .build();
 
         channel.exchangeDeclare(exchange, BuiltinExchangeType.TOPIC, true);
-        channel.basicPublish(exchange, routingKey, props, message);
+        channel.basicPublish(exchange, routingKey, props, message.getBytes(StandardCharsets.UTF_8));
     }
 }

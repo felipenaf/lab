@@ -9,14 +9,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
 public class OutboxPublisher {
     private static final Logger log = LoggerFactory.getLogger(OutboxPublisher.class);
-    private static final int delay = 10000;
-    private static final int pagination = 1000;
     private final OutboxEventRepository outboxEventRepository;
     private final MessagePublisher messagePublisher;
 
@@ -28,11 +25,11 @@ public class OutboxPublisher {
         this.messagePublisher = messagePublisher;
     }
 
-    @Scheduled(fixedDelay = delay)
+    @Scheduled(fixedDelay = 10000)
     public void publishPendingEvents() {
         List<OutboxEvent> events = outboxEventRepository.findByStatus(
             OutboxEvent.Status.PENDING,
-            PageRequest.of(0, pagination)
+            PageRequest.of(0, 1000)
         );
 
         log.info("Pending events {}", events.size());
@@ -42,7 +39,7 @@ public class OutboxPublisher {
                 messagePublisher.publish(
                     event.getEventType(),
                     event.getKey(),
-                    event.getPayload().getBytes(StandardCharsets.UTF_8)
+                    event.getPayload()
                 );
 
                 event.setStatus(OutboxEvent.Status.PROCESSED);
