@@ -97,7 +97,7 @@ services:
     ports:
       - "4566:4566"
     environment:
-      - LOCALSTACK_AUTH_TOKEN=
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
       - SERVICES=sns,sqs,s3
       - AWS_DEFAULT_REGION=us-east-1
       - DEBUG=0
