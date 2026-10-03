@@ -1,4 +1,4 @@
-package com.example.orderApp.configuration;
+package com.example.orderApp.configuration.rabbitMQ;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -8,19 +8,19 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-    private final RabbitmqProperties rabbitmqProperties;
+    private final RabbitmqProperties properties;
 
-    public RabbitMQConfig(RabbitmqProperties rabbitmqProperties) {
-        this.rabbitmqProperties = rabbitmqProperties;
+    public RabbitMQConfig(RabbitmqProperties properties) {
+        this.properties = properties;
     }
 
     @Bean
     public Connection rabbitConnection() throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(rabbitmqProperties.host());
-        factory.setPort(rabbitmqProperties.port());
-        factory.setUsername(rabbitmqProperties.username());
-        factory.setPassword(rabbitmqProperties.password());
+        factory.setHost(properties.host());
+        factory.setPort(properties.port());
+        factory.setUsername(properties.username());
+        factory.setPassword(properties.password());
 
         return factory.newConnection();
     }
